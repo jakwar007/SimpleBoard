@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="../../styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100">
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out bg-white shadow-lg">
+    <div class="h-full flex flex-col">
+        <div class="p-4 border-b flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-brand-primary">SimpleBoard</h1>
+            <button id="inner-menu-button" class="p-2 rounded-lg hover:bg-gray-100 lg:hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-grow p-4">
+            <ul class="space-y-2">
+                <li>
+                    <a href="/dashboard" class="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <button type="button" class="flex items-center w-full p-2 rounded-lg hover:bg-gray-100 text-gray-700" aria-controls="projects-dropdown" data-collapse-toggle="projects-dropdown">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        <span class="flex-1 text-left">To-do</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <ul id="projects-dropdown" class="hidden py-2 space-y-2">
+                        <% projects.forEach(project => { %>
+                            <li>
+                                <a href="/projects/<%= project._id %>" class="flex items-center w-full p-2 pl-11 rounded-lg hover:bg-gray-100 text-gray-700 text-sm transition-colors duration-200 <%= currentPath === `/projects/${project._id}` ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : '' %>">
+                                    <%= project.name %>
+                                </a>
+                            </li>
+                        <% }); %>
+                        <li>
+                            <% if (projects.length === 0) { %>
+                                <a href="/projects" class="flex items-center w-full p-2 pl-11 hover:bg-gray-100 rounded-lg text-blue-600 text-sm transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Nowy projekt
+                                </a>
+                            <% } else { %>
+                                <a class="flex items-center w-full p-2 pl-11 rounded-lg text-gray-400 text-sm transition-colors duration-200 cursor-not-allowed">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Nowy projekt
+                                </a>
+                            <% } %>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- User Profile Dropdown -->
+        <div class="border-t p-4">
+            <div id="user-menu" class="relative">
+                <button id="user-menu-button" class="flex items-center w-full p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                    <img src="/images/profile.png" alt="User avatar" class="w-8 h-8 rounded-full mr-3">
+                    <span class="flex-grow text-left"><%= user.email.split('@')[0] %></span>
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="user-dropdown" class="hidden absolute bottom-full left-0 w-full mb-2 bg-white rounded-lg shadow-lg">
+                    <ul class="py-2">
+                        <li>
+                            <a class="block px-4 py-2 text-gray-400 cursor-not-allowed">
+                                Profil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="block px-4 py-2 text-gray-400 cursor-not-allowed">
+                                Ustawienia
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="my-1 border-gray-200">
+                        </li>
+                        <li>
+                            <form action="/auth/logout" method="POST" class="w-full">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" autocomplete="off">
+                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">
+                                    Wyloguj się
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Outer Mobile Menu Button -->
+<div class="lg:hidden fixed top-4 left-4 z-50" id="outer-menu-button">
+    <button class="p-2 rounded-lg bg-white shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+</div>
+
+<!-- Overlay for mobile -->
+<div id="overlay" class="fixed inset-0 bg-black opacity-50 z-30 hidden lg:hidden"></div>
+
+<!-- Main Content -->
+<main class="lg:ml-64 min-h-screen p-4 lg:mt-0 mt-16">
+    <%- body %>
+</main>
+<script>
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('nav a');
+
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.remove('text-gray-700', 'hover:bg-gray-100');
+            link.classList.add('bg-brand-primary', 'text-white', 'font-medium', 'hover:bg-brand-primary/90');
+        }
+    });
+
+    $(document).ready(function() {
+        $('#outer-menu-button').click(function() {
+            $(this).hide();
+            $('#sidebar').removeClass('-translate-x-full');
+            $('#overlay').removeClass('hidden');
+        });
+
+        $('#inner-menu-button').click(function() {
+            $('#sidebar').addClass('-translate-x-full');
+            $('#overlay').addClass('hidden');
+            $('#outer-menu-button').show();
+        });
+
+        $('#overlay').click(function() {
+            $('#sidebar').addClass('-translate-x-full');
+            $('#overlay').addClass('hidden');
+            $('#outer-menu-button').show();
+        });
+
+        $('#user-menu-button').click(function(e) {
+            e.stopPropagation();
+            $('#user-dropdown').toggleClass('hidden');
+        });
+
+        $(document).click(function() {
+            $('#user-dropdown').addClass('hidden');
+        });
+
+        $('#user-dropdown').click(function(e) {
+            e.stopPropagation();
+        });
+
+        $(window).resize(function() {
+            if ($(window).width() >= 1024) {
+                $('#overlay').addClass('hidden');
+                $('#sidebar').removeClass('-translate-x-full');
+                $('#outer-menu-button').hide();
+            } else {
+                $('#sidebar').addClass('-translate-x-full');
+                $('#outer-menu-button').show();
+            }
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>

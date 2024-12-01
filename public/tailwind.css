@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+
+
+.note-card {
+    position: relative;
+    padding: 1rem;
+    background: rgb(249 250 251);
+    border-radius: 0.5rem;
+    transform: scale(1);
+    transition: transform 0.3s;
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.note-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    background: linear-gradient(
+            115deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa,
+            #2563eb
+    ) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    background-size: 400% 400%;
+    transition: opacity 0.3s;
+    opacity: 0;
+    animation: gradient 3s ease infinite;
+}
+
+.note-card:hover {
+    transform: scale(1.005);
+}
+
+.note-card:hover:before {
+    opacity: 1;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+[aria-expanded="true"] svg:last-child {
+    transform: rotate(180deg);
+}
+
+[data-collapse-toggle="projects-dropdown"] svg:last-child {
+    transition: transform 0.2s;
+}
+
+@keyframes wave {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(-10deg); }
+    40% { transform: rotate(10deg); }
+    60% { transform: rotate(-10deg); }
+    80% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.animate-wave {
+    display: inline-block;
+    animation: wave 2.5s infinite;
+    transform-origin: 70% 70%;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.animate-rotate {
+    animation: rotate 10s linear infinite;
+}
+
+.rotate-0 {
+    transform: rotate(0deg);
+}

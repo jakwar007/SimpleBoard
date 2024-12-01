@@ -1,0 +1,156 @@
+<div class="container mx-auto px-4 py-6 sm:py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8 sm:mb-12">
+                <div class="relative group w-fit mx-auto sm:mx-0">
+                    <div class="absolute inset-0 rounded-full bg-brand-primary/10 group-hover:bg-brand-primary/20 transition-colors duration-300"></div>
+                    <img src="/images/profile.png" alt="User avatar" class="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-white shadow-lg animate-rotate group-hover:animate-none transition-transform duration-300 group-hover:rotate-0">
+                </div>
+
+                <div class="text-center sm:text-left">
+                    <div class="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 mb-1">
+                        <span class="wave-emoji text-lg sm:text-xl animate-wave">👋</span>
+                        <h1 class="text-lg sm:text-xl font-semibold text-gray-900">
+                            Witaj w SimpleBoard
+                        </h1>
+                    </div>
+                    <div class="text-gray-600 text-sm">
+                        <%= user.email.split('@')[0] %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-lg font-medium text-gray-800">
+                    Twoje notatki
+                    <span class="inline-flex items-center justify-center w-6 h-6 text-sm bg-gray-50 text-gray-600 rounded-md ml-2" id="notes-count">0</span>
+                </h3>
+
+                <button data-modal-target="noteModal" data-modal-toggle="noteModal"
+                        class="inline-flex items-center gap-2 bg-brand-primary text-white px-4 py-2 rounded-lg hover:bg-brand-primary/90 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Nowa notatka
+                </button>
+            </div>
+
+            <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="noteModal" tabindex="-1" aria-hidden="true"
+     class="hidden overflow-y-auto overflow-x-hidden bg-white/50 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Nowa notatka
+                </h3>
+                <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-hide="noteModal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Zamknij modal</span>
+                </button>
+            </div>
+            <form id="noteForm" class="p-4 md:p-5">
+                <div class="grid gap-4 mb-4">
+                    <div class="col-span-2">
+                        <label for="title"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tytuł</label>
+                        <input type="text" id="title" name="title" required
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    </div>
+                </div>
+                <div class="flex items-center justify-end space-x-4">
+                    <button type="button"
+                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-brand-primary/30 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
+                            data-modal-hide="noteModal">
+                        Anuluj
+                    </button>
+                    <button type="submit"
+                            class="text-white bg-brand-primary hover:bg-brand-primary/90 focus:ring-4 focus:outline-none focus:ring-brand-primary/30 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        Zapisz
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function fetchNotes() {
+        try {
+            const response = await fetch('/api/notes');
+            const data = await response.json();
+
+            const notesContainer = document.getElementById('notes-list');
+            const notesCount = document.getElementById('notes-count');
+
+            notesCount.textContent = data.count;
+            notesContainer.innerHTML = '';
+
+            data.notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-card';
+                noteElement.innerHTML = `
+                    <h4 class="font-medium">${DOMPurify.sanitize(note.title)}</h4>
+                    <p class="text-gray-600 mt-2">${DOMPurify.sanitize(note.content.slice(0, 24))}${note.content.length > 24 ? '...' : ''}</p>
+                    <div class="text-sm text-gray-500 mt-2">
+                        Ostatnia aktualizacja: ${new Date(note.updatedAt).toLocaleDateString()}
+                    </div>
+                `;
+                noteElement.addEventListener('click', () => {
+                    window.location.href = `/dashboard/notes/${note.id}`;
+                });
+                notesContainer.appendChild(noteElement);
+            });
+        } catch (err) {
+            console.error('Failed to fetch notes:', err);
+        }
+    }
+
+    document.getElementById('noteForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            title: document.getElementById('title').value,
+        };
+
+        try {
+            const response = await fetch('/api/notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const modal = document.getElementById('noteModal');
+                const modalInstance = new Modal(modal);
+                modalInstance.hide();
+
+                document.getElementById('noteForm').reset();
+                fetchNotes();
+            } else {
+                throw new Error('Failed to create note');
+            }
+        } catch (err) {
+            console.error('Error creating note:', err);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchNotes();
+    });
+</script>

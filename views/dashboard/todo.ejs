@@ -1,0 +1,414 @@
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+<link href="../todo.css" rel="stylesheet" />
+<div class="board">
+    <div class="group" data-id="todo">
+        <div class="group-header">
+            <div class="group-title">Do zrobienia</div>
+            <div class="group-actions">
+                <button class="add-task-btn" data-modal-target="addTaskModal" data-modal-toggle="addTaskModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Dodaj zadanie
+                </button>
+            </div>
+        </div>
+        <div class="group-content"></div>
+    </div>
+
+    <div class="group" data-id="inprogress">
+        <div class="group-header">
+            <div class="group-title">W trakcie</div>
+            <div class="group-actions">
+                <button class="add-task-btn" data-modal-target="addTaskModal" data-modal-toggle="addTaskModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Dodaj zadanie
+                </button>
+            </div>
+        </div>
+        <div class="group-content"></div>
+    </div>
+
+    <div class="group" data-id="done">
+        <div class="group-header">
+            <div class="group-title">Zakończone</div>
+            <div class="group-actions">
+                <button class="add-task-btn" data-modal-target="addTaskModal" data-modal-toggle="addTaskModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Dodaj zadanie
+                </button>
+            </div>
+        </div>
+        <div class="group-content"></div>
+    </div>
+</div>
+
+
+<div id="addTaskModal" tabindex="-1" aria-hidden="true" class="fixed bg-white/50 top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow">
+            <div class="flex items-start justify-between p-4 border-b rounded-t">
+                <h3 class="text-xl font-semibold text-gray-900">
+                    Dodaj nowe zadanie
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center" data-modal-hide="addTaskModal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <input type="text" id="taskContent" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Wpisz nazwę zadania..." required>
+                <div class="modal-priority">
+                    <button class="priority-btn" data-priority="low">Niski</button>
+                    <button class="priority-btn selected" data-priority="medium">Średni</button>
+                    <button class="priority-btn" data-priority="high">Wysoki</button>
+                </div>
+            </div>
+            <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+                <button data-modal-hide="addTaskModal" type="button" class="save-task text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Dodaj</button>
+                <button data-modal-hide="addTaskModal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="save-notification" class="fixed bottom-0 left-0 right-0 flex items-center justify-center p-4 transform translate-y-full transition-transform duration-300">
+    <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg shadow-lg w-full max-w-4xl saving-state">
+        <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+        </svg>
+        <span class="text-sm font-medium">Zapisywanie pozycji...</span>
+    </div>
+    <div class="hidden flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg shadow-lg w-full max-w-4xl success-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+        <span class="text-sm font-medium">Zapisano pozycje</span>
+    </div>
+    <div class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg w-full max-w-4xl error-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        <span class="text-sm font-medium">Nie udało się zapisać pozycji</span>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let posBuffer = [];
+        let projectId = '<%= projectId %>';
+        let currentGroupId = null;
+        let selectedPriority = 'medium';
+
+        function loadProjectData() {
+            $.ajax({
+                url: `/api/projects/${projectId}`,
+                type: 'GET',
+                success: function(project) {
+                    Object.entries(project.tasks).forEach(([groupId, tasks]) => {
+                        tasks.forEach(task => addTaskToGroup(task, groupId));
+                    });
+
+                    console.log('debug positions:', project.positions);
+                    if (project.positions && Object.keys(project.positions).length > 0) {
+                        Object.entries(project.positions).forEach(([groupId, pos]) => {
+                            const group = $(`.group[data-id="${groupId}"]`);
+                            if (group.length && pos) {
+                                group.css({
+                                    position: 'absolute',
+                                    left: `${pos.left}px`,
+                                    top: `${pos.top}px`
+                                });
+                                console.log('debug setting position for group:', groupId, pos);
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error loading project:', xhr);
+                }
+            });
+        }
+
+        function initDraggable() {
+            $('.task').draggable({
+                connectToSortable: '.group-content',
+                cursor: 'grabbing',
+                helper: 'original',
+                revert: 'invalid',
+                start: function(event, ui) {
+                    $(this).addClass('dragging');
+                },
+                stop: function(event, ui) {
+                    $(this).removeClass('dragging');
+                }
+            });
+
+            $('.group-content').sortable({
+                connectWith: '.group-content',
+                placeholder: 'placeholder',
+                tolerance: 'pointer',
+                receive: function(event, ui) {
+                    const taskId = ui.item.data('id');
+                    const toGroup = $(this).closest('.group').data('id');
+
+                    $.ajax({
+                        url: `/api/projects/${projectId}/tasks/${taskId}/move`,
+                        type: 'PUT',
+                        data: JSON.stringify({
+                            toGroup: toGroup
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        error: function(xhr) {
+                            console.error('Error moving task:', xhr);
+                            ui.sender.sortable('cancel');
+                        }
+                    });
+                }
+            });
+
+            $('.group').draggable({
+                handle: '.group-header',
+                cursor: 'grabbing',
+                snap: '.group',
+                snapMode: 'outer',
+                revert: 'invalid',
+                zIndex: 100,
+                start: function(event, ui) {
+                    $(this).css('touch-action', 'none');
+                },
+                stop: function(event, ui) {
+                    $(this).css('touch-action', '');
+                    const position = $(this).position();
+                    const groupId = $(this).data('id');
+
+                    console.log('debug', {
+                        groupId: groupId,
+                        left: position.left,
+                        top: position.top,
+                        offset: {
+                            left: ui.offset.left,
+                            top: ui.offset.top
+                        },
+                        position: {
+                            left: ui.position.left,
+                            top: ui.position.top
+                        }
+                    });
+
+                    const existingIndex = posBuffer.findIndex(item => Object.keys(item)[0] === groupId);
+
+                    if (existingIndex !== -1) {
+                        posBuffer[existingIndex][groupId] = {
+                            offset: {
+                                left: ui.offset.left,
+                                top: ui.offset.top
+                            },
+                            position: {
+                                left: ui.position.left,
+                                top: ui.position.top
+                            },
+                            left: position.left,
+                            top: position.top
+                        };
+                    } else {
+                        posBuffer.push({
+                            [groupId]: {
+                                offset: {
+                                    left: ui.offset.left,
+                                    top: ui.offset.top
+                                },
+                                position: {
+                                    left: ui.position.left,
+                                    top: ui.position.top
+                                },
+                                left: position.left,
+                                top: position.top
+                            }
+                        });
+                    }
+                }
+            });
+
+            $('.board').droppable({
+                accept: '.group',
+                tolerance: 'fit'
+            });
+        }
+
+        function addTaskToGroup(task, groupId) {
+            const priorityClass = `priority-${task.priority}`;
+            const taskHtml = `
+            <div class="task" data-id="${task.id}">
+                <div class="task-content">${DOMPurify.sanitize(task.content)}</div>
+                <div class="task-footer">
+                    <div class="priority ${priorityClass}"></div>
+                    <div class="task-actions">
+                        <button class="task-action-btn delete-task">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+            $(`[data-id="${groupId}"] .group-content`).append(taskHtml);
+            initDraggable();
+        }
+
+        $('.add-task-btn').click(function() {
+            currentGroupId = $(this).closest('.group').data('id');
+        });
+
+        $('.priority-btn').click(function() {
+            $('.priority-btn').removeClass('selected');
+            $(this).addClass('selected');
+            selectedPriority = $(this).data('priority');
+        });
+
+        $('.delete-task').click(function() {
+            const task = $(this).closest('.task');
+            const taskId = task.data('id');
+            const groupId = task.closest('.group').data('id');
+
+            $.ajax({
+                url: `/api/projects/${projectId}/tasks/${taskId}`,
+                type: 'DELETE',
+                data: JSON.stringify({ groupId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                success: function() {
+                    task.remove();
+                },
+                error: function(xhr) {
+                    console.error('Error deleting task:', xhr);
+                }
+            });
+        });
+
+        $('.save-task').click(function() {
+            const content = $('#taskContent').val().trim();
+            if (content && currentGroupId) {
+                $.ajax({
+                    url: `/api/projects/${projectId}/tasks`,
+                    type: 'POST',
+                    data: JSON.stringify({
+                        groupId: currentGroupId,
+                        content: content,
+                        priority: selectedPriority
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    success: function(response) {
+                        addTaskToGroup({
+                            id: response.taskId,
+                            content: content,
+                            priority: selectedPriority
+                        }, currentGroupId);
+                        $('#taskContent').val('');
+                        selectedPriority = 'medium';
+                        $('.priority-btn').removeClass('selected');
+                        $('.priority-btn[data-priority="medium"]').addClass('selected');
+                    },
+                    error: function(xhr) {
+                        console.error('Error adding task:', xhr);
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.delete-task', function() {
+            const task = $(this).closest('.task');
+            const taskId = task.data('id');
+            const groupId = task.closest('.group').data('id');
+
+            $.ajax({
+                url: `/api/projects/${projectId}/tasks/${taskId}`,
+                type: 'DELETE',
+                data: JSON.stringify({ groupId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                success: function() {
+                    task.remove();
+                },
+                error: function(xhr) {
+                    console.error('Error deleting task:', xhr);
+                }
+            });
+        });
+
+        setInterval(() => {
+            console.log('debug', posBuffer);
+
+            if (posBuffer.length === 0) {
+                return;
+            }
+
+            const notification = $('#save-notification');
+            notification.find('div').addClass('hidden');
+            notification.find('.saving-state').removeClass('hidden');
+            notification.removeClass('translate-y-full');
+
+            $.ajax({
+                url: `/api/projects/${projectId}/pos`,
+                type: 'PUT',
+                data: JSON.stringify({
+                    posBuffer
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                success: function(response) {
+                    posBuffer = [];
+                    notification.find('div').addClass('hidden');
+                    notification.find('.success-state').removeClass('hidden');
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr);
+                    notification.find('div').addClass('hidden');
+                    notification.find('.error-state').removeClass('hidden');
+                }
+            });
+
+            setTimeout(() => {
+                notification.addClass('translate-y-full');
+            }, 3000);
+        }, 2000);
+
+        loadProjectData();
+        initDraggable();
+    });
+</script>
